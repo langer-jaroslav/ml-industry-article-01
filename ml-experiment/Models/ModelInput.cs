@@ -14,10 +14,10 @@ public class ModelInput
     public float AmbientTemperature { get; set; }
 
     [LoadColumn(3)]
-    public float MaterialQuality { get; set; }  // Přidána proměnná pro kvalitu materiálu
+    public float MaterialQuality { get; set; }
 
     [LoadColumn(4)]
-    public float Humidity { get; set; }  // Přidána proměnná pro vlhkost
+    public float Humidity { get; set; }
 
     [LoadColumn(5)]
     public float NumberOfDefects { get; set; }

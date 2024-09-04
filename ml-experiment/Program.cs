@@ -2,9 +2,9 @@
 using Microsoft.ML.Trainers.FastTree;
 using MLAI01.Models;
 
-class Program
+internal class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
         var context = new MLContext(seed: 1);
 
