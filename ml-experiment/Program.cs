@@ -93,11 +93,13 @@ internal class Program
             .Fit(trainData);
 
         // Evaluate models
-        EvaluateModel(context, randomForestModel, testData, "Random Forest");
-        EvaluateModel(context, xgBoostModel, testData, "XGBoost");
-        EvaluateModel(context, neuralNetworkModel, testData, "Neural Network");
+        Console.WriteLine("Defects evaluation");
+        EvaluateModel(context, randomForestModel, testData, "Random Forest (Defects)");
+        EvaluateModel(context, xgBoostModel, testData, "XGBoost (Defects)");
+        EvaluateModel(context, neuralNetworkModel, testData, "Neural Network (Defects)");
 
-        // Evaluate models for CycleTime
+        Console.WriteLine();
+        Console.WriteLine("CycleTime evaluation");
         EvaluateModel2(context, randomForestCycleTimeModel, testData, "Random Forest (CycleTime)");
         EvaluateModel2(context, xgBoostCycleTimeModel, testData, "XGBoost (CycleTime)");
         EvaluateModel2(context, neuralNetworkCycleTimeModel, testData, "Neural Network (CycleTime)");
