@@ -60,16 +60,62 @@ internal class Program
                 featureColumnName: "Features"))
             .Fit(trainData);
 
+        var randomForestCycleTimeModel = pipeline
+            .Append(context.Regression.Trainers.FastForest(
+                new FastForestRegressionTrainer.Options
+                {
+                    LabelColumnName = nameof(ModelInput.CycleTime),
+                    FeatureColumnName = "Features",
+                    NumberOfTrees = 2000,
+                    MaximumBinCountPerFeature = 512,
+                    MinimumExampleCountPerLeaf = 5
+                }))
+            .Fit(trainData);
+
+        var xgBoostCycleTimeModel = pipeline
+            .Append(context.Regression.Trainers.FastTree(
+                new FastTreeRegressionTrainer.Options
+                {
+                    LabelColumnName = nameof(ModelInput.CycleTime),
+                    FeatureColumnName = "Features",
+                    NumberOfLeaves = 200,
+                    NumberOfTrees = 2000,
+                    LearningRate = 0.005,
+                    MinimumExampleCountPerLeaf = 5,
+                    Shrinkage = 0.8,
+                }))
+            .Fit(trainData);
+
+        var neuralNetworkCycleTimeModel = pipeline
+            .Append(context.Regression.Trainers.Sdca(
+                labelColumnName: nameof(ModelInput.CycleTime),
+                featureColumnName: "Features"))
+            .Fit(trainData);
+
         // Evaluate models
         EvaluateModel(context, randomForestModel, testData, "Random Forest");
         EvaluateModel(context, xgBoostModel, testData, "XGBoost");
         EvaluateModel(context, neuralNetworkModel, testData, "Neural Network");
+
+        // Evaluate models for CycleTime
+        EvaluateModel2(context, randomForestCycleTimeModel, testData, "Random Forest (CycleTime)");
+        EvaluateModel2(context, xgBoostCycleTimeModel, testData, "XGBoost (CycleTime)");
+        EvaluateModel2(context, neuralNetworkCycleTimeModel, testData, "Neural Network (CycleTime)");
     }
 
     static void EvaluateModel(MLContext context, ITransformer model, IDataView testData, string modelName)
     {
         var predictions = model.Transform(testData);
         var metrics = context.Regression.Evaluate(predictions, labelColumnName: nameof(ModelInput.NumberOfDefects), scoreColumnName: nameof(ModelOutput.Score));
+
+        Console.WriteLine($"Model: {modelName}");
+        Console.WriteLine($"  RMSE: {metrics.RootMeanSquaredError}");
+        Console.WriteLine($"  R2: {metrics.RSquared}");
+    }
+    static void EvaluateModel2(MLContext context, ITransformer model, IDataView testData, string modelName)
+    {
+        var predictions = model.Transform(testData);
+        var metrics = context.Regression.Evaluate(predictions, labelColumnName: nameof(ModelInput.CycleTime), scoreColumnName: nameof(ModelOutput.Score));
 
         Console.WriteLine($"Model: {modelName}");
         Console.WriteLine($"  RMSE: {metrics.RootMeanSquaredError}");
